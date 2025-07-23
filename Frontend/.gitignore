@@ -16,7 +16,6 @@ logs/
 # Build outputs
 target/
 build/
-dist/
 
 # Dependencies
 node_modules/
