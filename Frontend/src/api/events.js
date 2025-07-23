@@ -7,25 +7,29 @@ const getAuthHeader = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+let cachedEvents = null;
+let cachedEventById = {};
+
 export const fetchEvents = async () => {
+  if (cachedEvents) return cachedEvents;
   const res = await axios.get(`${API_URL}/api/events`, {
     headers: getAuthHeader(),
   });
-  return res.data.data.events;
+  cachedEvents = res.data.data.events;
+  return cachedEvents;
 };
 
 export const fetchEvent = async (id) => {
+  if (cachedEventById[id]) return cachedEventById[id];
   const res = await axios.get(`${API_URL}/api/events/${id}`, {
     headers: getAuthHeader(),
   });
-  return res.data.data.event;
+  cachedEventById[id] = res.data.data.event;
+  return cachedEventById[id];
 };
 
 export const fetchEventById = async (id) => {
-  const res = await axios.get(`${API_URL}/api/events/${id}`, {
-    headers: getAuthHeader(),
-  });
-  return res.data.data.event;
+  return fetchEvent(id); // use the cached function
 };
 
 export const createEvent = async (eventData) => {
@@ -48,6 +52,7 @@ export const createEvent = async (eventData) => {
   const res = await axios.post(`${API_URL}/api/events`, payload, {
     headers,
   });
+  cachedEvents = null; // invalidate cache
   return res.data.data.event;
 };
 
@@ -71,12 +76,16 @@ export const updateEvent = async (id, eventData) => {
   const res = await axios.put(`${API_URL}/api/events/${id}`, payload, {
     headers,
   });
-  return res.data.data.event;
+  cachedEvents = null;
+  cachedEventById[id] = res.data.data.event;
+  return cachedEventById[id];
 };
 
 export const deleteEvent = async (id) => {
   const res = await axios.delete(`${API_URL}/api/events/${id}`, {
     headers: getAuthHeader(),
   });
+  cachedEvents = null;
+  delete cachedEventById[id];
   return res.data;
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -11,14 +11,17 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import LandingPage from "./components/LandingPage";
-import EventDetails from "./pages/EventDetails";
-import Booking from "./pages/Booking";
-import Payment from "./pages/Payment";
-import BookingConfirmation from "./pages/BookingConfirmation";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProfilePage from "./pages/ProfilePage";
+import Loader from "./components/Loader";
+
+//  Lazy-loaded pages
+const EventDetails = lazy(() => import("./pages/EventDetails"));
+const Booking = lazy(() => import("./pages/Booking"));
+const Payment = lazy(() => import("./pages/Payment"));
+const BookingConfirmation = lazy(() => import("./pages/BookingConfirmation"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 function App() {
   const [user, setUser] = useState(null);
@@ -60,81 +63,83 @@ function App() {
     );
   }
 
-  return (
-    <>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              user ? (
-                <LandingPage
-                  userRole={user.role}
-                  userName={user.name}
-                  user={user}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Login setUser={setUser} />
-              )
-            }
-          />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login setUser={setUser} />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route
-            path="/dashboard"
-            element={
-              user ? (
-                <LandingPage
-                  userRole={user.role}
-                  userName={user.name}
-                  user={user}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Login setUser={setUser} />
-              )
-            }
-          />
-          <Route
-            path="/event/:eventId"
-            element={user ? <EventDetails /> : <Login setUser={setUser} />}
-          />
-          <Route
-            path="/booking/:eventId"
-            element={user ? <Booking /> : <Login setUser={setUser} />}
-          />
-          <Route
-            path="/payment/:bookingId"
-            element={user ? <Payment /> : <Login setUser={setUser} />}
-          />
-          <Route
-            path="/booking-confirmation/:bookingId"
-            element={
-              user ? (
-                <BookingConfirmation user={user} />
-              ) : (
-                <Login setUser={setUser} />
-              )
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              user ? (
-                <ProfilePage user={user} setUser={setUser} />
-              ) : (
-                <Login setUser={setUser} />
-              )
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+    return (
+        <>
+            <ToastContainer position="top-right" autoClose={3000} />
+            <BrowserRouter>
+                <Suspense fallback={<Loader />}>
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                user ? (
+                                    <LandingPage
+                                        userRole={user.role}
+                                        userName={user.name}
+                                        user={user}
+                                        onLogout={handleLogout}
+                                    />
+                                ) : (
+                                    <Login setUser={setUser} />
+                                )
+                            }
+                        />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/login" element={<Login setUser={setUser} />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route
+                            path="/dashboard"
+                            element={
+                                user ? (
+                                    <LandingPage
+                                        userRole={user.role}
+                                        userName={user.name}
+                                        user={user}
+                                        onLogout={handleLogout}
+                                    />
+                                ) : (
+                                    <Login setUser={setUser} />
+                                )
+                            }
+                        />
+                        <Route
+                            path="/event/:eventId"
+                            element={user ? <EventDetails /> : <Login setUser={setUser} />}
+                        />
+                        <Route
+                            path="/booking/:eventId"
+                            element={user ? <Booking /> : <Login setUser={setUser} />}
+                        />
+                        <Route
+                            path="/payment/:bookingId"
+                            element={user ? <Payment /> : <Login setUser={setUser} />}
+                        />
+                        <Route
+                            path="/booking-confirmation/:bookingId"
+                            element={
+                                user ? (
+                                    <BookingConfirmation user={user} />
+                                ) : (
+                                    <Login setUser={setUser} />
+                                )
+                            }
+                        />
+                        <Route
+                            path="/profile"
+                            element={
+                                user ? (
+                                    <ProfilePage user={user} setUser={setUser} />
+                                ) : (
+                                    <Login setUser={setUser} />
+                                )
+                            }
+                        />
+                    </Routes>
+                </Suspense>
+            </BrowserRouter>
+        </>
+    );
 }
 
 function AuthHome() {
