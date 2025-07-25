@@ -39,6 +39,9 @@ const eventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+//  Add index to _id for clarity
+eventSchema.index({ _id: 1 });
+
 // Virtual for available seats
 eventSchema.virtual("availableSeats").get(function () {
   return this.totalSeats - this.soldTickets;

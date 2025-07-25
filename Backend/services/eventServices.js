@@ -63,11 +63,12 @@ exports.getEvents = async (req, res, next) => {
       // Only upcoming events
       q.date = { $gt: new Date().toISOString().slice(0, 10) };
     }
-    // Admin sees all events
 
+    // Use lean() for faster performance
     const events = await Event.find(q)
-      .populate("createdBy", "name email _id")
-      .sort({ date: 1, time: 1 });
+        .populate("createdBy", "name email _id")
+        .sort({ date: 1, time: 1 })
+        .lean();
 
     res.json({ success: true, data: { events } });
   } catch (err) {
@@ -78,10 +79,9 @@ exports.getEvents = async (req, res, next) => {
 /* ─────────────  READ — single  ──────────────────────────────── */
 exports.getEventById = async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id).populate(
-      "createdBy",
-      "name email _id"
-    );
+    const event = await Event.findById(req.params.id)
+        .populate("createdBy", "name email _id")
+        .lean(); // ✅ Optimization
 
     if (!event)
       return res

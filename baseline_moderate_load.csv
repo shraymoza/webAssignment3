@@ -1,0 +1,6 @@
+Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec
+Get All Events,50,498,484,551,572,772,427,772,0.000%,.84080,8.78,0.55
+Get Specific Event,50,332,315,377,384,528,282,528,0.000%,.84685,1.74,0.59
+Get available seats,50,343,340,375,385,408,298,408,0.000%,.84602,17.98,0.62
+Get my bookings,50,327,321,354,371,492,296,492,0.000%,.84760,6.54,0.56
+TOTAL,200,375,340,492,516,607,282,772,0.000%,3.25362,33.73,2.23

@@ -43,6 +43,10 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Add indexes for optimization
+bookingSchema.index({ eventId: 1 });
+bookingSchema.index({ userId: 1 });
+
 // Generate QR code
 bookingSchema.methods.generateQRCode = function () {
   const bookingData = {
